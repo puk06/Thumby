@@ -1,5 +1,4 @@
-﻿using System.Net.Sockets;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Thumby.Core.Interfaces;
 using Thumby.Core.Models;
 using Thumby.Core.Models.Layer;
