@@ -1,4 +1,5 @@
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace Thumby.WinForm.Utils;
 
@@ -20,7 +21,7 @@ public static class GraphicsExtensions
         byte[] pixelBuffer = new byte[bytes];
         byte[] resultBuffer = new byte[bytes];
 
-        System.Runtime.InteropServices.Marshal.Copy(srcData.Scan0, pixelBuffer, 0, bytes);
+        Marshal.Copy(srcData.Scan0, pixelBuffer, 0, bytes);
         image.UnlockBits(srcData);
 
         double sigma = radius / 2.0;
@@ -38,7 +39,6 @@ public static class GraphicsExtensions
                     for (int fx = -filterOffset; fx <= filterOffset; fx++)
                     {
                         int calcOffset = ((y + fy) * srcData.Stride) + ((x + fx) * 4);
-
                         double weight = kernel[fy + filterOffset, fx + filterOffset];
 
                         blue += pixelBuffer[calcOffset] * weight;
@@ -56,7 +56,7 @@ public static class GraphicsExtensions
             }
         }
 
-        System.Runtime.InteropServices.Marshal.Copy(resultBuffer, 0, dstData.Scan0, bytes);
+        Marshal.Copy(resultBuffer, 0, dstData.Scan0, bytes);
         blurred.UnlockBits(dstData);
 
         return blurred;

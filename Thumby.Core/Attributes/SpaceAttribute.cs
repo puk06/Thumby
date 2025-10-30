@@ -5,4 +5,3 @@ public class SpaceAttribute(int space) : Attribute
 {
     public int Space { get; } = space;
 }
-

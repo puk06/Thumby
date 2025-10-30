@@ -35,5 +35,5 @@ public class ThumbnailText : ICanvasLayer
     public string FontName { get; set; } = string.Empty;
 
     [UIField("色 (RGBA)")]
-    public SerializableColor Color { get; set; } = new(System.Drawing.Color.White);
+    public SerializableColor Color { get; set; } = new(255, 255, 255, 255);
 }

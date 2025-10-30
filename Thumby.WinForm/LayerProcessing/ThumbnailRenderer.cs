@@ -50,7 +50,6 @@ public static class ThumbnailRenderer
         if (!File.Exists(image.FilePath)) return;
 
         using Image img = Image.FromFile(image.FilePath);
-        using ImageAttributes attr = new ImageAttributes();
 
         Rectangle destRect = new(
             image.Position.X,
@@ -59,7 +58,7 @@ public static class ThumbnailRenderer
             (int)(img.Height * image.Scale)
         );
 
-        graphics.DrawImage(img, destRect, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, attr);
+        graphics.DrawImage(img, destRect, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel);
     }
 
     //  長方形・枠レイヤー
@@ -89,12 +88,12 @@ public static class ThumbnailRenderer
     // レイヤー効果（ガウスぼかし・明るさ・コントラスト）
     public static void ProcessEffectLayer(Bitmap source, Graphics graphics, LayerEffect effect)
     {
-        if (effect.BlurRadius > 0)
+        if (effect.ApplyGaussianBlur && effect.BlurRadius > 0)
         {
             ApplyGaussianBlur(source, graphics, effect.BlurRadius);
         }
 
-        if (effect.Brightness != 0 || effect.Contrast != 0)
+        if ((effect.ApplyBrightness && effect.Brightness != 0) || (effect.ApplyContrast && effect.Contrast != 0))
         {
             ApplyBrightnessContrast(source, graphics, effect.Brightness, effect.Contrast);
         }
@@ -124,7 +123,7 @@ public static class ThumbnailRenderer
             [b + t, b + t, b + t, 0, 1]
         ];
 
-        ColorMatrix cm = new ColorMatrix(matrix);
+        ColorMatrix cm = new(matrix);
         attributes.SetColorMatrix(cm);
 
         graphics.DrawImage(image, new Rectangle(0, 0, image.Width, image.Height), 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, attributes);
