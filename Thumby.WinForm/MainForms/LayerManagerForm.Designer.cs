@@ -43,6 +43,7 @@
             saveSettingsData = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             saveResult = new ToolStripMenuItem();
+            autoPreview = new CheckBox();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -92,20 +93,21 @@
             // 
             // canvasSizeTextBox
             // 
-            canvasSizeTextBox.Font = new Font("Yu Gothic UI", 12F);
-            canvasSizeTextBox.Location = new Point(304, 50);
+            canvasSizeTextBox.Font = new Font("Yu Gothic UI", 11F);
+            canvasSizeTextBox.Location = new Point(424, 442);
             canvasSizeTextBox.Name = "canvasSizeTextBox";
             canvasSizeTextBox.PlaceholderText = "1024";
-            canvasSizeTextBox.Size = new Size(285, 29);
+            canvasSizeTextBox.Size = new Size(164, 27);
             canvasSizeTextBox.TabIndex = 4;
             canvasSizeTextBox.Text = "1024";
+            canvasSizeTextBox.TextAlign = HorizontalAlignment.Center;
             canvasSizeTextBox.TextChanged += CanvasSizeTextBox_TextChanged;
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Font = new Font("Yu Gothic UI", 12.75F, FontStyle.Bold, GraphicsUnit.Point, 128);
-            label2.Location = new Point(304, 24);
+            label2.Font = new Font("Yu Gothic UI", 12.75F, FontStyle.Bold);
+            label2.Location = new Point(304, 443);
             label2.Name = "label2";
             label2.Size = new Size(114, 23);
             label2.TabIndex = 5;
@@ -114,10 +116,10 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Font = new Font("Yu Gothic UI", 12.75F, FontStyle.Bold, GraphicsUnit.Point, 128);
-            label3.Location = new Point(304, 89);
+            label3.Font = new Font("Yu Gothic UI Semibold", 16F, FontStyle.Bold);
+            label3.Location = new Point(304, 24);
             label3.Name = "label3";
-            label3.Size = new Size(72, 23);
+            label3.Size = new Size(94, 30);
             label3.TabIndex = 6;
             label3.Text = "プロパティ";
             // 
@@ -134,16 +136,17 @@
             // 
             // propertyPanel
             // 
+            propertyPanel.AutoScroll = true;
             propertyPanel.BackColor = SystemColors.Control;
             propertyPanel.BorderStyle = BorderStyle.FixedSingle;
-            propertyPanel.Location = new Point(304, 115);
+            propertyPanel.Location = new Point(304, 61);
             propertyPanel.Name = "propertyPanel";
-            propertyPanel.Size = new Size(285, 360);
+            propertyPanel.Size = new Size(285, 368);
             propertyPanel.TabIndex = 9;
-            propertyPanel.AutoScroll = true;
             // 
             // menuStrip1
             // 
+            menuStrip1.BackColor = SystemColors.Control;
             menuStrip1.Items.AddRange(new ToolStripItem[] { ファイルToolStripMenuItem });
             menuStrip1.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
             menuStrip1.Location = new Point(0, 0);
@@ -185,11 +188,23 @@
             saveResult.Text = "画像を出力する";
             saveResult.Click += SaveResult_Click;
             // 
+            // autoPreview
+            // 
+            autoPreview.AutoSize = true;
+            autoPreview.Font = new Font("Yu Gothic UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 128);
+            autoPreview.Location = new Point(470, 30);
+            autoPreview.Name = "audoPreview";
+            autoPreview.Size = new Size(118, 25);
+            autoPreview.TabIndex = 16;
+            autoPreview.Text = "自動プレビュー";
+            autoPreview.UseVisualStyleBackColor = true;
+            // 
             // LayerManagerForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(600, 485);
+            Controls.Add(autoPreview);
             Controls.Add(propertyPanel);
             Controls.Add(renderPreviewButton);
             Controls.Add(label3);
@@ -229,5 +244,6 @@
         private ToolStripMenuItem saveSettingsData;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem saveResult;
+        private CheckBox autoPreview;
     }
 }

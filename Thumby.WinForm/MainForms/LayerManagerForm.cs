@@ -6,6 +6,7 @@ using Thumby.WinForm.LayerProcessing;
 using Thumby.WinForm.Services;
 using Thumby.WinForm.SubForms;
 using Thumby.WinForm.Utils;
+using Timer = System.Windows.Forms.Timer;
 
 namespace Thumby.WinForm.MainForms;
 
@@ -23,6 +24,11 @@ public partial class LayerManagerForm : Form
 
     private readonly PreviewZoomForm _previewZoomForm = new();
     private readonly AddLayerForm _addLayerForm = new();
+    
+    private readonly Timer _autoPreviewTimer = new()
+    {
+        Interval = 500
+    };
 
     public LayerManagerForm()
     {
@@ -39,6 +45,14 @@ public partial class LayerManagerForm : Form
         _contextMenu.Items.Add("レイヤーを削除").Click += RemoveLayer;
 
         canvasLayerList.ContextMenuStrip = _contextMenu;
+
+        _autoPreviewTimer.Tick += (s, ev) =>
+        {
+            if (!autoPreview.Checked) return;
+
+            _autoPreviewTimer.Stop();
+            BeginInvoke(() => RenderPreview());
+        };
     }
 
     private void RefleshPriorityText()
@@ -194,6 +208,12 @@ public partial class LayerManagerForm : Form
         RefleshPriorityText();
         TriggerCheckedChanged();
     }
+
+    private void OnLayerPropertyChanged()
+    {
+        _autoPreviewTimer.Stop();
+        _autoPreviewTimer.Start();
+    }
     #endregion
 
     #region イベントハンドラー
@@ -207,7 +227,7 @@ public partial class LayerManagerForm : Form
         }
         else if (e.Button == MouseButtons.Left && clickedIndex != -1)
         {
-            UIBuilder.BuildUI(propertyPanel, _canvasLayers[clickedIndex], RefleshPriorityText);
+            UIBuilder.BuildUI(propertyPanel, _canvasLayers[clickedIndex], [RefleshPriorityText, OnLayerPropertyChanged]);
         }
     }
 
@@ -241,7 +261,7 @@ public partial class LayerManagerForm : Form
         canvasLayerList.Items.Insert(0, canvasLayer.ToString(-1));
         _canvasLayers.Insert(0, canvasLayer);
 
-        UIBuilder.BuildUI(propertyPanel, canvasLayer, RefleshPriorityText);
+        UIBuilder.BuildUI(propertyPanel, canvasLayer, [RefleshPriorityText, OnLayerPropertyChanged]);
 
         RefleshPriorityText();
     }
@@ -346,6 +366,7 @@ public partial class LayerManagerForm : Form
         }
 
         _previewZoomForm.SetImage(bitmap, true);
+        if (!_previewZoomForm.Visible) _previewZoomForm.Show();
     }
     #endregion
 }

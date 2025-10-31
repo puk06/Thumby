@@ -177,10 +177,9 @@ public static class ThumbnailRenderer
         using Pen pen = new(line.LineColor.ToColor(), line.LineWidth)
         {
             StartCap = line.RoundCorner ? LineCap.Round : LineCap.Flat,
-            EndCap = line.RoundCorner ? LineCap.Round : LineCap.Flat
+            EndCap = line.RoundCorner ? LineCap.Round : LineCap.Flat,
+            LineJoin = LineJoin.Round
         };
-
-        graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
         graphics.DrawLine(
             pen,

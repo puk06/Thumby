@@ -6,8 +6,8 @@ namespace Thumby.WinForm.Services;
 internal static class UIBuilder
 {
     private static readonly Font TitleFont = new Font("Yu Gothic UI", 11F, FontStyle.Bold);
-    
-    internal static void BuildUI(Control parent, object target, Action OnPropertyChanged)
+
+    internal static void BuildUI(Control parent, object target, Action[] OnPropertyChanged)
     {
         parent.Controls.Clear();
 
@@ -67,7 +67,7 @@ internal static class UIBuilder
                 ((CheckBox)input).CheckedChanged += (s, e) =>
                 {
                     prop.SetValue(target, ((CheckBox)input).Checked);
-                    OnPropertyChanged.Invoke();
+                    InvokeEvents(OnPropertyChanged);
                 };
             }
             else
@@ -94,26 +94,26 @@ internal static class UIBuilder
                             case Type t when t == typeof(SerializablePoint):
                                 {
                                     prop.SetValue(target, StringToPoint(((TextBox)input).Text));
-                                    OnPropertyChanged.Invoke();
+                                    InvokeEvents(OnPropertyChanged);
                                     return;
                                 }
                             case Type t when t == typeof(SerializableRectangle):
                                 {
                                     prop.SetValue(target, StringToRectangle(((TextBox)input).Text));
-                                    OnPropertyChanged.Invoke();
+                                    InvokeEvents(OnPropertyChanged);
                                     return;
                                 }
                             case Type t when t == typeof(SerializableColor):
                                 {
                                     prop.SetValue(target, StringToColor(((TextBox)input).Text));
-                                    OnPropertyChanged.Invoke();
+                                    InvokeEvents(OnPropertyChanged);
                                     return;
                                 }
                         }
 
                         object value = Convert.ChangeType(((TextBox)input).Text, prop.PropertyType);
                         prop.SetValue(target, value);
-                        OnPropertyChanged.Invoke();
+                        InvokeEvents(OnPropertyChanged);
                     }
                     catch { }
                 };
@@ -129,6 +129,14 @@ internal static class UIBuilder
             {
                 y += 30;
             }
+        }
+    }
+    
+    private static void InvokeEvents(Action[] actions)
+    {
+        foreach (var action in actions)
+        {
+            action.Invoke();
         }
     }
     

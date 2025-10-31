@@ -9,6 +9,10 @@
     <AssemblyName>Thumby</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>none</DebugType>
+	</PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Thumby.Core\Thumby.Core.csproj" />
   </ItemGroup>
