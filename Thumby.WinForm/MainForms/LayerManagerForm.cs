@@ -49,10 +49,6 @@ public partial class LayerManagerForm : Form
         }
     }
 
-    #region プロパティ変更画面
-
-    #endregion
-
     #region 設定ファイル関連
     private void LoadSettingsFile(string path)
     {
