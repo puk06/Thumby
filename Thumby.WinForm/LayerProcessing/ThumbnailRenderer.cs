@@ -40,32 +40,32 @@ public static class ThumbnailRenderer
         float x = position.X;
         float y = position.Y;
 
-        for (int i = 0; i < text.Content.Length; i++)
+        var lineBreakCharsArray = text.Content.Split(Environment.NewLine);
+        foreach (var lineBreakChars in lineBreakCharsArray)
         {
-            char c = text.Content[i];
-            if (c == '\n')
+            for (int i = 0; i < lineBreakChars.Length; i++)
             {
-                x = position.X;
-                y += font.GetHeight(graphics) + lineSpacing;
-                continue;
+                char c = lineBreakChars[i];
+                bool isLastChar = i == lineBreakChars.Length - 1;
+
+                if (text.Shadow) graphics.DrawString(c.ToString(), font, shadowBrush, new PointF(x + text.ShadowOffset.X, y + text.ShadowOffset.Y), format);
+                graphics.DrawString(c.ToString(), font, brush, new PointF(x, y), format);
+
+                float charWidth = graphics.MeasureString(c.ToString(), font).Width;
+
+                if (text.Underline)
+                {
+                    path.AddLine(new PointF(x, y + font.GetHeight(graphics) + text.UnderlineOffset), new PointF(isLastChar ? x + charWidth : x + charWidth + text.LetterSpacing, y + font.GetHeight(graphics) + text.UnderlineOffset));
+                    path.CloseFigure();
+                    graphics.DrawPath(underlinePen, path);
+                }
+
+                x += charWidth;
+                if (!isLastChar) x += letterSpacing;
             }
 
-            if (text.Shadow) graphics.DrawString(c.ToString(), font, shadowBrush, new PointF(x + text.ShadowOffset.X, y + text.ShadowOffset.Y), format);
-            graphics.DrawString(c.ToString(), font, brush, new PointF(x, y), format);
-
-            float charWidth = graphics.MeasureString(c.ToString(), font).Width;
-
-            if (text.Underline)
-            {
-                path.AddLine(new PointF(x, y + font.GetHeight(graphics) + text.UnderlineOffset), new PointF(x + charWidth, y + font.GetHeight(graphics) + text.UnderlineOffset));
-                graphics.DrawPath(underlinePen, path);
-                path.CloseFigure();
-            }
-
-            x += charWidth;
-
-            if (i != text.Content.Length - 1)
-                x += letterSpacing;
+            x = position.X;
+            y += font.GetHeight(graphics) + lineSpacing;
         }
 
         if (isPreview && text.PreviewRect) RenderTextLine(graphics, position, width, height);
@@ -124,8 +124,11 @@ public static class ThumbnailRenderer
             float charWidth = graphics.MeasureString(c.ToString(), font).Width;
 
             x += charWidth;
+
             if (i != text.Content.Length - 1)
+            {
                 x += letterSpacing;
+            }
         }
 
         return (x, y + font.GetHeight(graphics));
