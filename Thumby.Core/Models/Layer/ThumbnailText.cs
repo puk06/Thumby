@@ -32,12 +32,12 @@ public class ThumbnailText : ICanvasLayer
 
     [UIField("サイズ")]
     public float FontSize { get; set; } = 70f;
+    
+    [UIField("字間")]
+    public float LetterSpacing { get; set; }
 
     [UIField("行間")]
     public float LineSpacing { get; set; }
-
-    [UIField("字間")]
-    public float LetterSpacing { get; set; }
 
     [UIField("フォント名")]
     public string FontName { get; set; } = string.Empty;

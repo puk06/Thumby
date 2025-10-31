@@ -41,8 +41,13 @@ public static class ThumbnailRenderer
         float y = position.Y;
 
         var lineBreakCharsArray = text.Content.Split(Environment.NewLine);
-        foreach (var lineBreakChars in lineBreakCharsArray)
+        for (int i1 = 0; i1 < lineBreakCharsArray.Length; i1++)
         {
+            x = position.X;
+
+            string? lineBreakChars = lineBreakCharsArray[i1];
+            bool isLastLine = i1 == lineBreakCharsArray.Length - 1;
+
             for (int i = 0; i < lineBreakChars.Length; i++)
             {
                 char c = lineBreakChars[i];
@@ -64,8 +69,8 @@ public static class ThumbnailRenderer
                 if (!isLastChar) x += letterSpacing;
             }
 
-            x = position.X;
-            y += font.GetHeight(graphics) + lineSpacing;
+            y += font.GetHeight(graphics);
+            if (!isLastLine) y += lineSpacing;
         }
 
         if (isPreview && text.PreviewRect) RenderTextLine(graphics, position, width, height);
@@ -107,31 +112,34 @@ public static class ThumbnailRenderer
         graphics.TranslateTransform(position.X, position.Y);
         graphics.RotateTransform(text.Rotation);
         graphics.TranslateTransform(-position.X, -position.Y);
-
+        
         float x = 0;
         float y = 0;
 
-        for (int i = 0; i < text.Content.Length; i++)
+        var lineBreakCharsArray = text.Content.Split(Environment.NewLine);
+        for (int i1 = 0; i1 < lineBreakCharsArray.Length; i1++)
         {
-            char c = text.Content[i];
-            if (c == '\n')
+            x = 0;
+            
+            string? lineBreakChars = lineBreakCharsArray[i1];
+            bool isLastLine = i1 == lineBreakCharsArray.Length - 1;
+
+            for (int i = 0; i < lineBreakChars.Length; i++)
             {
-                x = position.X;
-                y += font.GetHeight(graphics) + lineSpacing;
-                continue;
+                char c = lineBreakChars[i];
+                bool isLastChar = i == lineBreakChars.Length - 1;
+
+                float charWidth = graphics.MeasureString(c.ToString(), font).Width;
+
+                x += charWidth;
+                if (!isLastChar) x += letterSpacing;
             }
 
-            float charWidth = graphics.MeasureString(c.ToString(), font).Width;
-
-            x += charWidth;
-
-            if (i != text.Content.Length - 1)
-            {
-                x += letterSpacing;
-            }
+            y += font.GetHeight(graphics);
+            if (!isLastLine) y += lineSpacing;
         }
 
-        return (x, y + font.GetHeight(graphics));
+        return (x, y);
     }
 
     //  画像レイヤー

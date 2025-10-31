@@ -29,9 +29,6 @@ public class ThumbnailRectangle : ICanvasLayer
     [UIField("線の色 (RGBA)")]
     public SerializableColor StrokeColor { get; set; } = new();
 
-    // [UIField("文字の下なら描画しない")]
-    // public bool HideUnderText { get; set; }
-
     public ICanvasLayer Clone()
     {
         return new ThumbnailRectangle
