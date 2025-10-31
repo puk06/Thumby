@@ -8,10 +8,13 @@ namespace Thumby.WinForm.LayerProcessing;
 
 public static class ThumbnailRenderer
 {
-    public static void ProcessTextLayer(Graphics graphics, ThumbnailText text)
+    public static void ProcessTextLayer(Graphics graphics, ThumbnailText text, bool isPreview = false)
     {
         using Font font = new(text.FontName, text.FontSize);
         using Brush brush = new SolidBrush(Color.FromArgb(text.Color.A, text.Color.R, text.Color.G, text.Color.B));
+        using Pen underlinePen = new(text.UnderlineColor.ToColor(), text.UnderlineWidth);
+        using Brush shadowBrush = new SolidBrush(Color.FromArgb(text.ShadowColor.A, text.ShadowColor.R, text.ShadowColor.G, text.ShadowColor.B));
+        using GraphicsPath path = new();
 
         StringFormat format = new()
         {
@@ -25,11 +28,21 @@ public static class ThumbnailRenderer
         // 描画開始位置
         SerializablePoint position = text.Position;
 
+        var (width, height) = CalculateTextRectangle(graphics, text);
+
+        float centerX = text.Position.X + width / 2f;
+        float centerY = text.Position.Y + height / 2f;
+
+        graphics.TranslateTransform(centerX, centerY);
+        graphics.RotateTransform(text.Rotation);
+        graphics.TranslateTransform(-centerX, -centerY);
+
         float x = position.X;
         float y = position.Y;
 
-        foreach (char c in text.Content)
+        for (int i = 0; i < text.Content.Length; i++)
         {
+            char c = text.Content[i];
             if (c == '\n')
             {
                 x = position.X;
@@ -37,11 +50,85 @@ public static class ThumbnailRenderer
                 continue;
             }
 
+            if (text.Shadow) graphics.DrawString(c.ToString(), font, shadowBrush, new PointF(x + text.ShadowOffset.X, y + text.ShadowOffset.Y), format);
             graphics.DrawString(c.ToString(), font, brush, new PointF(x, y), format);
 
             float charWidth = graphics.MeasureString(c.ToString(), font).Width;
-            x += charWidth + letterSpacing;
+
+            if (text.Underline)
+            {
+                path.AddLine(new PointF(x, y + font.GetHeight(graphics) + text.UnderlineOffset), new PointF(x + charWidth, y + font.GetHeight(graphics) + text.UnderlineOffset));
+                graphics.DrawPath(underlinePen, path);
+                path.CloseFigure();
+            }
+
+            x += charWidth;
+
+            if (i != text.Content.Length - 1)
+                x += letterSpacing;
         }
+
+        if (isPreview && text.PreviewRect) RenderTextLine(graphics, position, width, height);
+
+        graphics.ResetTransform();
+    }
+
+    private static void RenderTextLine(Graphics graphics, SerializablePoint position, float width, float height)
+    {
+        using Pen pen = new(Color.White, 2);
+        using GraphicsPath path = new();
+
+        var defaultPosition = new PointF(position.X, position.Y);
+
+        path.AddLine(defaultPosition, new PointF(position.X + width, position.Y));
+        path.AddLine(new PointF(position.X + width, position.Y), new PointF(position.X + width, position.Y + height));
+        path.AddLine(new PointF(position.X + width, position.Y + height), new PointF(position.X, position.Y + height));
+        path.AddLine(new PointF(position.X, position.Y + height), defaultPosition);
+        path.CloseFigure();
+        graphics.DrawPath(pen, path);
+    }
+
+    private static (float width, float height) CalculateTextRectangle(Graphics graphics, ThumbnailText text)
+    {
+        using Font font = new(text.FontName, text.FontSize);
+        using Brush brush = new SolidBrush(Color.FromArgb(text.Color.A, text.Color.R, text.Color.G, text.Color.B));
+
+        StringFormat format = new()
+        {
+            LineAlignment = StringAlignment.Near,
+            Alignment = StringAlignment.Near
+        };
+
+        float letterSpacing = text.LetterSpacing;
+        float lineSpacing = text.LineSpacing;
+
+        SerializablePoint position = text.Position;
+
+        graphics.TranslateTransform(position.X, position.Y);
+        graphics.RotateTransform(text.Rotation);
+        graphics.TranslateTransform(-position.X, -position.Y);
+
+        float x = 0;
+        float y = 0;
+
+        for (int i = 0; i < text.Content.Length; i++)
+        {
+            char c = text.Content[i];
+            if (c == '\n')
+            {
+                x = position.X;
+                y += font.GetHeight(graphics) + lineSpacing;
+                continue;
+            }
+
+            float charWidth = graphics.MeasureString(c.ToString(), font).Width;
+
+            x += charWidth;
+            if (i != text.Content.Length - 1)
+                x += letterSpacing;
+        }
+
+        return (x, y + font.GetHeight(graphics));
     }
 
     //  画像レイヤー
@@ -83,6 +170,23 @@ public static class ThumbnailRenderer
         {
             graphics.DrawRectangle(pen, area.X, area.Y, area.Width, area.Height);
         }
+    }
+
+    public static void ProcessLineLayer(Graphics graphics, ThumbnailLine line)
+    {
+        using Pen pen = new(line.LineColor.ToColor(), line.LineWidth)
+        {
+            StartCap = line.RoundCorner ? LineCap.Round : LineCap.Flat,
+            EndCap = line.RoundCorner ? LineCap.Round : LineCap.Flat
+        };
+
+        graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+        graphics.DrawLine(
+            pen,
+            new PointF(line.StartPoint.X, line.StartPoint.Y),
+            new PointF(line.EndPoint.X, line.EndPoint.Y)
+        );
     }
 
     // レイヤー効果（ガウスぼかし・明るさ・コントラスト）

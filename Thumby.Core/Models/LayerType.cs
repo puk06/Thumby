@@ -6,5 +6,6 @@ public enum LayerType
     Text,
     Image,
     Rectangle,
+    Line,
     LayerEffect
 }

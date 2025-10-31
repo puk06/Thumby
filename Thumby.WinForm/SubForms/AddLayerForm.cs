@@ -35,13 +35,19 @@ public partial class AddLayerForm : Form
         Close();
     }
 
-    private void Button4_Click(object sender, EventArgs e)
+    private void Button6_Click(object sender, EventArgs e)
+    {
+        _selectedLayerType = LayerType.Line;
+        Close();
+    }
+
+    private void Button5_Click(object sender, EventArgs e)
     {
         _selectedLayerType = LayerType.LayerEffect;
         Close();
     }
 
-    private void Button5_Click(object sender, EventArgs e)
+    private void CancelButton_Click(object sender, EventArgs e)
     {
         _selectedLayerType = LayerType.None;
         Close();

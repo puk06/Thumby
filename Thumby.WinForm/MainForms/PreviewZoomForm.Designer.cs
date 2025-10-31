@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             panel = new Panel();
+            positionLabel = new Label();
             howToUse = new Button();
             viewReset = new Button();
             panel.SuspendLayout();
@@ -37,6 +38,7 @@
             // panel
             // 
             panel.BackColor = SystemColors.Control;
+            panel.Controls.Add(positionLabel);
             panel.Controls.Add(howToUse);
             panel.Controls.Add(viewReset);
             panel.Dock = DockStyle.Top;
@@ -44,6 +46,16 @@
             panel.Name = "panel";
             panel.Size = new Size(784, 43);
             panel.TabIndex = 3;
+            // 
+            // positionLabel
+            // 
+            positionLabel.AutoSize = true;
+            positionLabel.Font = new Font("Yu Gothic UI", 13F, FontStyle.Bold);
+            positionLabel.Location = new Point(237, 7);
+            positionLabel.Name = "positionLabel";
+            positionLabel.Size = new Size(86, 25);
+            positionLabel.TabIndex = 5;
+            positionLabel.Text = "座標: 0, 0";
             // 
             // howToUse
             // 
@@ -86,6 +98,7 @@
             MouseWheel += ImageZoomForm_MouseWheel;
             Resize += PreviewZoomForm_Resize;
             panel.ResumeLayout(false);
+            panel.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -93,5 +106,6 @@
         private Panel panel;
         private Button viewReset;
         private Button howToUse;
+        private Label positionLabel;
     }
 }

@@ -140,6 +140,7 @@
             propertyPanel.Name = "propertyPanel";
             propertyPanel.Size = new Size(285, 360);
             propertyPanel.TabIndex = 9;
+            propertyPanel.AutoScroll = true;
             // 
             // menuStrip1
             // 

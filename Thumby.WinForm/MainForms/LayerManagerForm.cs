@@ -27,7 +27,6 @@ public partial class LayerManagerForm : Form
     public LayerManagerForm()
     {
         InitializeComponent();
-        InitializeEventHandlers();
         _previewZoomForm.Show();
 
         _contextMenu.Items.Add("上へ移動").Click += MoveLayerUp;
@@ -35,24 +34,11 @@ public partial class LayerManagerForm : Form
         _contextMenu.Items.Add("一番上へ移動").Click += MoveCheckedListBoxItemToTop;
         _contextMenu.Items.Add("一番下へ移動").Click += MoveCheckedListBoxItemToBottom;
         _contextMenu.Items.Add(new ToolStripSeparator());
+        _contextMenu.Items.Add("レイヤーを複製").Click += CopyLayer;
+        _contextMenu.Items.Add(new ToolStripSeparator());
         _contextMenu.Items.Add("レイヤーを削除").Click += RemoveLayer;
 
         canvasLayerList.ContextMenuStrip = _contextMenu;
-    }
-
-    private void InitializeEventHandlers()
-    {
-        _previewZoomForm.PreviewMouseUp += Preview_MouseUp;
-    }
-
-    private void Preview_MouseUp(object? sender, MouseEventArgs e)
-    {
-        if (sender == null) return;
-
-        if (sender is Point clickedPosition)
-        {
-            // クリックした場所のポイントを割り当てられるようにする
-        }
     }
 
     private void RefleshPriorityText()
@@ -177,6 +163,27 @@ public partial class LayerManagerForm : Form
         (canvasLayerList.Items[index2], canvasLayerList.Items[index1]) = (canvasLayerList.Items[index1], canvasLayerList.Items[index2]);
     }
 
+    private void CopyLayer(object? sender, EventArgs e)
+    {
+        if (_rightClickedIndex == -1) return;
+
+        ICanvasLayer canvasLayer = _canvasLayers[_rightClickedIndex].Clone();
+
+        canvasLayerList.Items.Insert(0, canvasLayer.ToString(-1));
+        _canvasLayers.Insert(0, canvasLayer);
+
+        int index = 1;
+        while (_canvasLayers.Any(canvasLayer => canvasLayer.Index == index))
+        {
+            index++;
+        }
+
+        canvasLayer.Index = index;
+
+        RefleshPriorityText();
+        TriggerCheckedChanged();
+    }
+
     private void RemoveLayer(object? sender, EventArgs e)
     {
         if (_rightClickedIndex == -1) return;
@@ -221,6 +228,7 @@ public partial class LayerManagerForm : Form
             case LayerType.Text: canvasLayer = new ThumbnailText(); break;
             case LayerType.Image: canvasLayer = new ThumbnailImage(); break;
             case LayerType.Rectangle: canvasLayer = new ThumbnailRectangle(); break;
+            case LayerType.Line: canvasLayer = new ThumbnailLine(); break;
             case LayerType.LayerEffect: canvasLayer = new LayerEffect(); break;
         }
 
@@ -314,7 +322,7 @@ public partial class LayerManagerForm : Form
 
             using (Graphics graphics = Graphics.FromImage(bitmap))
             {
-                LayerProcessor.ProcessLayers(bitmap, graphics, _canvasLayers);
+                LayerProcessor.ProcessLayers(bitmap, graphics, _canvasLayers, false);
             }
 
             bitmap.Save(newFilePath);
@@ -338,7 +346,7 @@ public partial class LayerManagerForm : Form
 
         using (Graphics graphics = Graphics.FromImage(bitmap))
         {
-            LayerProcessor.ProcessLayers(bitmap, graphics, _canvasLayers);
+            LayerProcessor.ProcessLayers(bitmap, graphics, _canvasLayers, true);
         }
 
         _previewZoomForm.SetImage(bitmap, true);

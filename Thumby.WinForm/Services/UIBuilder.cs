@@ -5,11 +5,13 @@ namespace Thumby.WinForm.Services;
 
 internal static class UIBuilder
 {
+    private static readonly Font TitleFont = new Font("Yu Gothic UI", 11F, FontStyle.Bold);
+    
     internal static void BuildUI(Control parent, object target, Action OnPropertyChanged)
     {
         parent.Controls.Clear();
 
-        int y = 10;
+        int y = 5;
         var type = target.GetType();
 
         foreach (var prop in type.GetProperties())
@@ -20,7 +22,30 @@ internal static class UIBuilder
             if (prop.GetCustomAttributes(typeof(SpaceAttribute), false).FirstOrDefault() is SpaceAttribute spaceAttr)
                 y += spaceAttr.Space;
 
-            // ラベル
+            if (prop.GetCustomAttributes(typeof(TitleAttribute), false).FirstOrDefault() is TitleAttribute titleAttr)
+            {
+                Label titleLabel = new()
+                {
+                    Font = TitleFont,
+                    Text = titleAttr.Title,
+                    Location = new Point(10, y),
+                    AutoSize = true
+                };
+                parent.Controls.Add(titleLabel);
+
+                y += TitleFont.Height + 5;
+
+                Label titleLineLabel = new()
+                {
+                    BorderStyle = BorderStyle.FixedSingle,
+                    Location = new Point(10, y),
+                    Size = new Size(parent.Width - 30, 1)
+                };
+                parent.Controls.Add(titleLineLabel);
+
+                y += 10;
+            }
+
             Label label = new()
             {
                 Text = attr.Label != "" ? attr.Label : prop.Name,
@@ -51,9 +76,8 @@ internal static class UIBuilder
                 {
                     Text = ConvertToString(prop.GetValue(target), prop.PropertyType),
                     Location = new Point(150, y),
-                    Width = parent.Width - 160
+                    Width = parent.Width - 180
                 };
-
 
                 if (Attribute.IsDefined(prop, typeof(MultiLineAttribute)))
                 {

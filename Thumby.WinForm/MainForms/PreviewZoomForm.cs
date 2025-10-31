@@ -9,9 +9,9 @@ internal partial class PreviewZoomForm : Form
     internal event MouseEventHandler? PreviewMouseMoved;
     internal event MouseEventHandler? PreviewMouseUp;
     
-    private static readonly SolidBrush _backgroundBrush = new SolidBrush(Color.FromArgb(160, 0, 0, 0));
-    private static readonly Pen _redPen = new Pen(Color.Red, 1f);
-    private static readonly Pen _borderPen = new Pen(Color.Gray, 1);
+    private static readonly SolidBrush _backgroundBrush = new(Color.FromArgb(160, 0, 0, 0));
+    private static readonly Pen _redPen = new(Color.Red, 1f);
+    private static readonly Pen _borderPen = new(Color.Gray, 1);
 
     private Image? _image;
     private float _zoom = 1.0f;
@@ -176,7 +176,9 @@ internal partial class PreviewZoomForm : Form
         }
         else
         {
-            NotifyMouseMoved(GetClickedPosition(e.Location), e);
+            var clickedPosition = GetClickedPosition(e.Location);
+            NotifyMouseMoved(clickedPosition, e);
+            positionLabel.Text = $"座標: {clickedPosition.X}, {clickedPosition.Y}";
         }
     }
 
@@ -221,7 +223,7 @@ internal partial class PreviewZoomForm : Form
     private void HowToUse_Click(object sender, EventArgs e)
         => FormUtils.ShowInfo(
             "操作方法\n\n" +
-            "クリック：\n" +
+            "Ctrl + クリック：\n" +
             "　→ 表示中の画像をドラッグで移動\n\n" +
             "マウスホイール：\n" +
             "　→ 画像の拡大 / 縮小"

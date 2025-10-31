@@ -28,24 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
             label1 = new Label();
+            button1 = new Button();
             button2 = new Button();
             button3 = new Button();
             button4 = new Button();
             button5 = new Button();
+            cancelButton = new Button();
             SuspendLayout();
-            // 
-            // button1
-            // 
-            button1.Font = new Font("Yu Gothic UI", 14F);
-            button1.Location = new Point(12, 63);
-            button1.Name = "button1";
-            button1.Size = new Size(289, 51);
-            button1.TabIndex = 0;
-            button1.Text = "テキスト";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += Button1_Click;
             // 
             // label1
             // 
@@ -57,6 +47,17 @@
             label1.Size = new Size(229, 40);
             label1.TabIndex = 1;
             label1.Text = "レイヤーを追加する";
+            // 
+            // button1
+            // 
+            button1.Font = new Font("Yu Gothic UI", 14F);
+            button1.Location = new Point(12, 63);
+            button1.Name = "button1";
+            button1.Size = new Size(289, 51);
+            button1.TabIndex = 0;
+            button1.Text = "テキスト";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += Button1_Click;
             // 
             // button2
             // 
@@ -83,36 +84,48 @@
             // button4
             // 
             button4.Font = new Font("Yu Gothic UI", 14F);
-            button4.Location = new Point(12, 234);
+            button4.Location = new Point(12, 291);
             button4.Name = "button4";
             button4.Size = new Size(289, 51);
             button4.TabIndex = 4;
             button4.Text = "レイヤー効果";
             button4.UseVisualStyleBackColor = true;
-            button4.Click += Button4_Click;
+            button4.Click += Button5_Click;
             // 
             // button5
             // 
-            button5.Font = new Font("Yu Gothic UI Semibold", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 128);
-            button5.Location = new Point(12, 332);
+            button5.Font = new Font("Yu Gothic UI", 14F);
+            button5.Location = new Point(12, 234);
             button5.Name = "button5";
             button5.Size = new Size(289, 51);
-            button5.TabIndex = 5;
-            button5.Text = "キャンセル";
+            button5.TabIndex = 6;
+            button5.Text = "直線";
             button5.UseVisualStyleBackColor = true;
-            button5.Click += Button5_Click;
+            button5.Click += Button6_Click;
+            // 
+            // cancelButton
+            // 
+            cancelButton.Font = new Font("Yu Gothic UI Semibold", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 128);
+            cancelButton.Location = new Point(12, 385);
+            cancelButton.Name = "cancelButton";
+            cancelButton.Size = new Size(289, 51);
+            cancelButton.TabIndex = 5;
+            cancelButton.Text = "キャンセル";
+            cancelButton.UseVisualStyleBackColor = true;
+            cancelButton.Click += CancelButton_Click;
             // 
             // AddLayerForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(313, 395);
-            Controls.Add(button5);
-            Controls.Add(button4);
-            Controls.Add(button3);
-            Controls.Add(button2);
+            ClientSize = new Size(313, 448);
             Controls.Add(label1);
             Controls.Add(button1);
+            Controls.Add(button2);
+            Controls.Add(button3);
+            Controls.Add(button4);
+            Controls.Add(button5);
+            Controls.Add(cancelButton);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "AddLayerForm";
@@ -124,11 +137,12 @@
 
         #endregion
 
-        private Button button1;
         private Label label1;
+        private Button button1;
         private Button button2;
         private Button button3;
         private Button button4;
         private Button button5;
+        private Button cancelButton;
     }
 }

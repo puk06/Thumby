@@ -7,6 +7,7 @@ namespace Thumby.Core.Interfaces;
 [JsonDerivedType(typeof(ThumbnailText), "TextLayer")]
 [JsonDerivedType(typeof(ThumbnailImage), "ImageLayer")]
 [JsonDerivedType(typeof(ThumbnailRectangle), "RectangleLayer")]
+[JsonDerivedType(typeof(ThumbnailLine), "LineLayer")]
 [JsonDerivedType(typeof(LayerEffect), "LayerEffect")]
 public interface ICanvasLayer
 {
@@ -21,4 +22,6 @@ public interface ICanvasLayer
 
     public string ToString(int index)
         => $"{(index == -1 ? "N/A" : index)}  |  {LayerName}  |   {GetLayerName()}";
+
+    public ICanvasLayer Clone();
 }
