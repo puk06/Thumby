@@ -239,7 +239,7 @@ internal static class ThumbnailRenderer
     {
         using ImageAttributes attributes = new();
         float b = brightness / 100f;
-        float c = contrast / 100f + 1f;
+        float c = (contrast / 100f) + 1f;
 
         float t = 0.5f * (1f - c);
 
