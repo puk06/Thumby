@@ -6,7 +6,7 @@ namespace Thumby.WinForm.LayerProcessing;
 
 internal class LayerProcessor
 {
-    public static void ProcessLayers(Bitmap bitmap, Graphics graphics, List<ICanvasLayer> canvasLayers, bool isPreview)
+    internal static void ProcessLayers(Bitmap bitmap, Graphics graphics, List<ICanvasLayer> canvasLayers, bool isPreview)
     {
         graphics.SmoothingMode = SmoothingMode.AntiAlias;
         graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
