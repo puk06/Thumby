@@ -90,7 +90,7 @@
             button4.TabIndex = 4;
             button4.Text = "レイヤー効果";
             button4.UseVisualStyleBackColor = true;
-            button4.Click += Button5_Click;
+            button4.Click += Button4_Click;
             // 
             // button5
             // 
@@ -101,7 +101,7 @@
             button5.TabIndex = 6;
             button5.Text = "直線";
             button5.UseVisualStyleBackColor = true;
-            button5.Click += Button6_Click;
+            button5.Click += Button5_Click;
             // 
             // cancelButton
             // 
