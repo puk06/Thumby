@@ -4,7 +4,7 @@ using Thumby.Core.Interfaces;
 
 namespace Thumby.WinForm.LayerProcessing;
 
-internal class LayerProcessor
+internal static class LayerProcessor
 {
     internal static void ProcessLayers(Bitmap bitmap, Graphics graphics, List<ICanvasLayer> canvasLayers, bool isPreview)
     {
