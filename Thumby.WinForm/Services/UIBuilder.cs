@@ -1,4 +1,5 @@
-﻿using Thumby.Core.Attributes;
+﻿using System.Reflection;
+using Thumby.Core.Attributes;
 using Thumby.Core.Models;
 
 namespace Thumby.WinForm.Services;
@@ -64,11 +65,7 @@ internal static class UIBuilder
                     Location = new Point(150, y)
                 };
 
-                ((CheckBox)input).CheckedChanged += (s, e) =>
-                {
-                    prop.SetValue(target, ((CheckBox)input).Checked);
-                    InvokeEvents(OnPropertyChanged);
-                };
+                ((CheckBox)input).CheckedChanged += (s, e) => OnCheckboxPropertyChanged(((CheckBox)input), prop, target, OnPropertyChanged);
             }
             else
             {
@@ -85,62 +82,65 @@ internal static class UIBuilder
                     input.Height = 60;
                 }
 
-                ((TextBox)input).TextChanged += (s, e) =>
-                {
-                    try
-                    {
-                        if (string.IsNullOrEmpty(((TextBox)input).Text)) return;
-                        
-                        switch (prop.PropertyType)
-                        {
-                            case Type t when t == typeof(SerializablePoint):
-                                {
-                                    prop.SetValue(target, StringToPoint(((TextBox)input).Text));
-                                    InvokeEvents(OnPropertyChanged);
-                                    return;
-                                }
-                            case Type t when t == typeof(SerializableRectangle):
-                                {
-                                    prop.SetValue(target, StringToRectangle(((TextBox)input).Text));
-                                    InvokeEvents(OnPropertyChanged);
-                                    return;
-                                }
-                            case Type t when t == typeof(SerializableColor):
-                                {
-                                    prop.SetValue(target, StringToColor(((TextBox)input).Text));
-                                    InvokeEvents(OnPropertyChanged);
-                                    return;
-                                }
-                        }
-
-                        object value = Convert.ChangeType(((TextBox)input).Text, prop.PropertyType);
-                        prop.SetValue(target, value);
-                        InvokeEvents(OnPropertyChanged);
-                    }
-                    catch { }
-                };
+                ((TextBox)input).TextChanged += (s, e) => OnTextPropertyChanged((TextBox)input, prop, target, OnPropertyChanged);
             }
 
             parent.Controls.Add(input);
 
-            if (Attribute.IsDefined(prop, typeof(MultiLineAttribute)))
-            {
-                y += 60;
-            }
-            else
-            {
-                y += 30;
-            }
+            if (Attribute.IsDefined(prop, typeof(MultiLineAttribute))) y += 60;
+            else y += 30;
         }
     }
-    
+
     private static void InvokeEvents(Action[] actions)
     {
-        foreach (var action in actions)
+        foreach (var action in actions) action.Invoke();
+    }
+
+    #region イベントハンドラー
+    private static void OnCheckboxPropertyChanged(CheckBox checkBox, PropertyInfo property, object target, Action[] OnPropertyChanged)
+    {
+        property.SetValue(target, checkBox.Checked);
+        InvokeEvents(OnPropertyChanged);
+    }
+    private static void OnTextPropertyChanged(TextBox textBox, PropertyInfo property, object target, Action[] OnPropertyChanged)
+    {
+        try
         {
-            action.Invoke();
+            if (string.IsNullOrEmpty(textBox.Text)) return;
+
+            switch (property.PropertyType)
+            {
+                case Type t when t == typeof(SerializablePoint):
+                    {
+                        property.SetValue(target, StringToPoint(textBox.Text));
+                        InvokeEvents(OnPropertyChanged);
+                        return;
+                    }
+                case Type t when t == typeof(SerializableRectangle):
+                    {
+                        property.SetValue(target, StringToRectangle(textBox.Text));
+                        InvokeEvents(OnPropertyChanged);
+                        return;
+                    }
+                case Type t when t == typeof(SerializableColor):
+                    {
+                        property.SetValue(target, StringToColor(textBox.Text));
+                        InvokeEvents(OnPropertyChanged);
+                        return;
+                    }
+            }
+
+            object value = Convert.ChangeType(textBox.Text, property.PropertyType);
+            property.SetValue(target, value);
+            InvokeEvents(OnPropertyChanged);
+        }
+        catch
+        {
+            // Ignored
         }
     }
+    #endregion
     
     #region 変換用の関数
     private static string ConvertToString(object? value, Type type)

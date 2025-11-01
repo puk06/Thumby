@@ -64,7 +64,7 @@ public static class GraphicsExtensions
 
     private static double[,] CreateGaussianKernel(int radius, double sigma)
     {
-        int size = radius * 2 + 1;
+        int size = (radius * 2) + 1;
         double[,] kernel = new double[size, size];
         double sum = 0;
         double piSigma = 2 * Math.PI * sigma * sigma;
@@ -73,7 +73,7 @@ public static class GraphicsExtensions
         {
             for (int x = -radius; x <= radius; x++)
             {
-                double value = Math.Exp(-(x * x + y * y) / (2 * sigma * sigma)) / piSigma;
+                double value = Math.Exp(-((x * x) + (y * y)) / (2 * sigma * sigma)) / piSigma;
                 kernel[y + radius, x + radius] = value;
                 sum += value;
             }

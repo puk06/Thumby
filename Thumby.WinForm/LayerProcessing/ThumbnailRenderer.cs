@@ -1,5 +1,6 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using Thumby.Core.Interfaces;
 using Thumby.Core.Models;
 using Thumby.Core.Models.Layer;
 using Thumby.WinForm.Utils;
@@ -8,7 +9,22 @@ namespace Thumby.WinForm.LayerProcessing;
 
 internal static class ThumbnailRenderer
 {
-    internal static void ProcessTextLayer(Graphics graphics, ThumbnailText text, bool isPreview = false)
+    internal static void ProcessLayer(Bitmap bitmap, Graphics graphics, ICanvasLayer canvasLayer, bool isPreview = false)
+    {
+        if (canvasLayer is ThumbnailText thumbnailText)
+            ProcessTextLayer(graphics, thumbnailText, isPreview);
+        if (canvasLayer is ThumbnailImage thumbnailImage)
+            ProcessImageLayer(graphics, thumbnailImage);
+        if (canvasLayer is ThumbnailRectangle thumbnailRectangle)
+            ProcessRectangleLayer(graphics, thumbnailRectangle);
+        if (canvasLayer is ThumbnailLine thumbnailLine)
+            ProcessLineLayer(graphics, thumbnailLine);
+        if (canvasLayer is LayerEffect layerEffect)
+            ProcessEffectLayer(bitmap, graphics, layerEffect);
+    }
+
+    #region テキストレイヤー
+    private static void ProcessTextLayer(Graphics graphics, ThumbnailText text, bool isPreview = false)
     {
         using Font font = new(text.FontName, text.FontSize);
         using Brush brush = new SolidBrush(Color.FromArgb(text.Color.A, text.Color.R, text.Color.G, text.Color.B));
@@ -25,13 +41,12 @@ internal static class ThumbnailRenderer
         float letterSpacing = text.LetterSpacing;
         float lineSpacing = text.LineSpacing;
 
-        // 描画開始位置
         SerializablePoint position = text.Position;
 
         var (width, height) = CalculateTextRectangle(graphics, text);
 
-        float centerX = text.Position.X + width / 2f;
-        float centerY = text.Position.Y + height / 2f;
+        float centerX = (position.X + width) / 2f;
+        float centerY = (position.Y + height) / 2f;
 
         graphics.TranslateTransform(centerX, centerY);
         graphics.RotateTransform(text.Rotation);
@@ -77,7 +92,6 @@ internal static class ThumbnailRenderer
 
         graphics.ResetTransform();
     }
-
     private static void RenderTextLine(Graphics graphics, SerializablePoint position, float width, float height)
     {
         using Pen pen = new(Color.White, 2);
@@ -92,7 +106,6 @@ internal static class ThumbnailRenderer
         path.CloseFigure();
         graphics.DrawPath(pen, path);
     }
-
     private static (float width, float height) CalculateTextRectangle(Graphics graphics, ThumbnailText text)
     {
         using Font font = new(text.FontName, text.FontSize);
@@ -112,7 +125,7 @@ internal static class ThumbnailRenderer
         graphics.TranslateTransform(position.X, position.Y);
         graphics.RotateTransform(text.Rotation);
         graphics.TranslateTransform(-position.X, -position.Y);
-        
+
         float x = 0;
         float y = 0;
 
@@ -120,7 +133,7 @@ internal static class ThumbnailRenderer
         for (int i1 = 0; i1 < lineBreakCharsArray.Length; i1++)
         {
             x = 0;
-            
+
             string? lineBreakChars = lineBreakCharsArray[i1];
             bool isLastLine = i1 == lineBreakCharsArray.Length - 1;
 
@@ -141,9 +154,10 @@ internal static class ThumbnailRenderer
 
         return (x, y);
     }
+    #endregion
 
-    //  画像レイヤー
-    internal static void ProcessImageLayer(Graphics graphics, ThumbnailImage image)
+    #region 画像レイヤー
+    private static void ProcessImageLayer(Graphics graphics, ThumbnailImage image)
     {
         if (!File.Exists(image.FilePath)) return;
 
@@ -158,9 +172,10 @@ internal static class ThumbnailRenderer
 
         graphics.DrawImage(img, destRect, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel);
     }
+    #endregion
 
-    //  長方形・枠レイヤー
-    internal static void ProcessRectangleLayer(Graphics graphics, ThumbnailRectangle rect)
+    #region 長方形レイヤー
+    private static void ProcessRectangleLayer(Graphics graphics, ThumbnailRectangle rect)
     {
         using Pen pen = new(rect.StrokeColor.ToColor(), rect.StrokeWidth);
         using GraphicsPath path = new();
@@ -182,8 +197,10 @@ internal static class ThumbnailRenderer
             graphics.DrawRectangle(pen, area.X, area.Y, area.Width, area.Height);
         }
     }
+    #endregion
 
-    internal static void ProcessLineLayer(Graphics graphics, ThumbnailLine line)
+    #region 直線レイヤー
+    private static void ProcessLineLayer(Graphics graphics, ThumbnailLine line)
     {
         using Pen pen = new(line.LineColor.ToColor(), line.LineWidth)
         {
@@ -198,9 +215,10 @@ internal static class ThumbnailRenderer
             new PointF(line.EndPoint.X, line.EndPoint.Y)
         );
     }
+    #endregion
 
-    // レイヤー効果（ガウスぼかし・明るさ・コントラスト）
-    internal static void ProcessEffectLayer(Bitmap source, Graphics graphics, LayerEffect effect)
+    #region レイヤー効果
+    private static void ProcessEffectLayer(Bitmap source, Graphics graphics, LayerEffect effect)
     {
         if (effect.ApplyGaussianBlur && effect.BlurRadius > 0)
         {
@@ -212,15 +230,11 @@ internal static class ThumbnailRenderer
             ApplyBrightnessContrast(source, graphics, effect.Brightness, effect.Contrast);
         }
     }
-
-    // ガウスぼかし
     private static void ApplyGaussianBlur(Bitmap bitmap, Graphics graphics, float radius)
     {
         Bitmap blurred = GraphicsExtensions.GaussianBlur(bitmap, 5);
         graphics.DrawImage(blurred, 0, 0);
     }
-
-    //  明るさ・コントラスト調整
     private static void ApplyBrightnessContrast(Bitmap image, Graphics graphics, float brightness, float contrast)
     {
         using ImageAttributes attributes = new();
@@ -242,4 +256,5 @@ internal static class ThumbnailRenderer
 
         graphics.DrawImage(image, new Rectangle(0, 0, image.Width, image.Height), 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, attributes);
     }
+    #endregion
 }
