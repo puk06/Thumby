@@ -6,9 +6,9 @@ using Thumby.WinForm.Utils;
 
 namespace Thumby.WinForm.LayerProcessing;
 
-public static class ThumbnailRenderer
+internal static class ThumbnailRenderer
 {
-    public static void ProcessTextLayer(Graphics graphics, ThumbnailText text, bool isPreview = false)
+    internal static void ProcessTextLayer(Graphics graphics, ThumbnailText text, bool isPreview = false)
     {
         using Font font = new(text.FontName, text.FontSize);
         using Brush brush = new SolidBrush(Color.FromArgb(text.Color.A, text.Color.R, text.Color.G, text.Color.B));
@@ -60,7 +60,7 @@ public static class ThumbnailRenderer
 
                 if (text.Underline)
                 {
-                    path.AddLine(new PointF(x, y + font.GetHeight(graphics) + text.UnderlineOffset), new PointF(isLastChar ? x + charWidth : x + charWidth + text.LetterSpacing, y + font.GetHeight(graphics) + text.UnderlineOffset));
+                    path.AddLine(new PointF(x, y + font.GetHeight(graphics) + text.UnderlineOffset), new PointF(isLastChar ? x + charWidth : x + charWidth + letterSpacing, y + font.GetHeight(graphics) + text.UnderlineOffset));
                     path.CloseFigure();
                     graphics.DrawPath(underlinePen, path);
                 }
@@ -143,7 +143,7 @@ public static class ThumbnailRenderer
     }
 
     //  画像レイヤー
-    public static void ProcessImageLayer(Graphics graphics, ThumbnailImage image)
+    internal static void ProcessImageLayer(Graphics graphics, ThumbnailImage image)
     {
         if (!File.Exists(image.FilePath)) return;
 
@@ -160,7 +160,7 @@ public static class ThumbnailRenderer
     }
 
     //  長方形・枠レイヤー
-    public static void ProcessRectangleLayer(Graphics graphics, ThumbnailRectangle rect)
+    internal static void ProcessRectangleLayer(Graphics graphics, ThumbnailRectangle rect)
     {
         using Pen pen = new(rect.StrokeColor.ToColor(), rect.StrokeWidth);
         using GraphicsPath path = new();
@@ -183,7 +183,7 @@ public static class ThumbnailRenderer
         }
     }
 
-    public static void ProcessLineLayer(Graphics graphics, ThumbnailLine line)
+    internal static void ProcessLineLayer(Graphics graphics, ThumbnailLine line)
     {
         using Pen pen = new(line.LineColor.ToColor(), line.LineWidth)
         {
@@ -200,7 +200,7 @@ public static class ThumbnailRenderer
     }
 
     // レイヤー効果（ガウスぼかし・明るさ・コントラスト）
-    public static void ProcessEffectLayer(Bitmap source, Graphics graphics, LayerEffect effect)
+    internal static void ProcessEffectLayer(Bitmap source, Graphics graphics, LayerEffect effect)
     {
         if (effect.ApplyGaussianBlur && effect.BlurRadius > 0)
         {

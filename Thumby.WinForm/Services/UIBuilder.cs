@@ -89,6 +89,8 @@ internal static class UIBuilder
                 {
                     try
                     {
+                        if (string.IsNullOrEmpty(((TextBox)input).Text)) return;
+                        
                         switch (prop.PropertyType)
                         {
                             case Type t when t == typeof(SerializablePoint):

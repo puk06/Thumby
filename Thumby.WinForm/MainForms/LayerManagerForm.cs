@@ -12,6 +12,8 @@ namespace Thumby.WinForm.MainForms;
 
 public partial class LayerManagerForm : Form
 {
+    private static readonly Font TitleFont = new Font("Yu Gothic UI", 11F);
+
     internal event Action? OnLayerChanged;
 
     internal int CanvasSize
@@ -24,17 +26,24 @@ public partial class LayerManagerForm : Form
 
     private readonly PreviewZoomForm _previewZoomForm = new();
     private readonly AddLayerForm _addLayerForm = new();
-    
+
     private readonly Timer _autoPreviewTimer = new()
     {
         Interval = 500
     };
+
+    private readonly ToolStripItem _itemTitleToolStripItem;
 
     public LayerManagerForm()
     {
         InitializeComponent();
         _previewZoomForm.Show();
 
+        _itemTitleToolStripItem = _contextMenu.Items.Add("レイヤー: Null");
+        _itemTitleToolStripItem.Enabled = false;
+        _itemTitleToolStripItem.Font = TitleFont;
+        _contextMenu.Items.Add(new ToolStripSeparator());
+        
         _contextMenu.Items.Add("上へ移動").Click += MoveLayerUp;
         _contextMenu.Items.Add("下へ移動").Click += MoveLayerDown;
         _contextMenu.Items.Add("一番上へ移動").Click += MoveCheckedListBoxItemToTop;
@@ -224,6 +233,7 @@ public partial class LayerManagerForm : Form
         if (e.Button == MouseButtons.Right)
         {
             _rightClickedIndex = clickedIndex;
+            if (_rightClickedIndex != -1) _itemTitleToolStripItem.Text = $"レイヤー: {_canvasLayers[_rightClickedIndex].GetLayerName()}";
         }
         else if (e.Button == MouseButtons.Left && clickedIndex != -1)
         {
